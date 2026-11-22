@@ -1,0 +1,32 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f2f4f8;
+  color: #222;
+}
+
+.container {
+  max-width: 750px;
+  margin: 60px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px #0001;
+}
+
+h1 {
+  color: #2563eb;
+}
+
+h2 {
+  color: #16a34a;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  margin: 10px 0;
+  background: #f1f5f9;
+  border-radius: 8px;
+}

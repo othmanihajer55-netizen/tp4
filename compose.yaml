@@ -1,0 +1,58 @@
+name: tp4
+
+services:
+  api:
+    build: ./api
+    image: tp4-api:1.0
+    environment:
+      DATABASE_URL: postgres://tp4:${POSTGRES_PASSWORD}@db:5432/tp4
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: tp4
+      POSTGRES_USER: tp4
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - tp4-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tp4 -d tp4"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    build: ./web
+    image: tp4-web:1.0
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  tp4-pgdata:
